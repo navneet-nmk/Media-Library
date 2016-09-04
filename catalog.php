@@ -69,7 +69,23 @@ include("inc/header.php"); ?>
             echo "<a href='catalog.php'>Full Catalog</a> &gt; ";
         }
         echo $pageTitle; ?></h1>
+        <div class="pagination">
+          Pages:
+          <?php
+            for($i =1; $i <= $total_pages; $i++){
+              if($i == $current_page){
+                echo " <span> $i </span>";
+              }else{
+                echo " <a href='catalog.php?";
+                if(!empty($section)){
+                  echo "cat=".$section."&";
+                }
+                echo "pg=$i'>$i</a>";
+              }
+            }
 
+           ?>
+        </div>
         <ul class="items">
             <?php
             foreach ($catalog as $item) {
