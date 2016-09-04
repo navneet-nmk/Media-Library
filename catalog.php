@@ -26,12 +26,26 @@ if(isset($_GET["pg"])){
 if(empty($current_page)){
   $current_page = 1;
 }
+// Limit results in redirect
+$limit_results = "";
+if(!empty($section)){
+  $limit_results =  "cat=". $section . "&";
+}
+
 
 $total_items = get_catalog_count($section);
 $total_pages = ceil($total_items / $items_per_page);
 
 if($current_page > $total_pages){
-  header("location:catalog.php");
+  header("location:catalog.php?pg=".
+          $limit_results.
+          $total_pages);
+}
+
+if($current_page < 1){
+  header("location:catalog.php?".
+          $limit_results.
+          "pg=1");
 }
 
 //determine the offset ( number of items to skip) for the current page
@@ -39,9 +53,9 @@ $offset = ($current_page -1) * $items_per_page;
 
 
 if(empty($section)){
-  $catalog = full_catalog_retrieval();
+  $catalog = full_catalog_retrieval($items_per_page, $offset) ;
 }else{
-  $catalog = category_catalog_retrieval($section);
+  $catalog = category_catalog_retrieval($section,$items_per_page, $offset);
 }
 
 include("inc/header.php"); ?>

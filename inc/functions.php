@@ -20,10 +20,19 @@ function get_catalog_count($category = null){
   return $count;
 }
 
-function full_catalog_retrieval(){
+function full_catalog_retrieval($limit = null, $offset = 0){
     include("connection.php");
     try{
-      $results = $db->query("Select media_id,title, category,img from Media ORDER BY title");
+      $sql = "Select media_id,title, category,img from Media ORDER BY title";
+      if(is_integer($limit)){
+        $results = $db->prepare($sql. " LIMIT ? OFFSET ?");
+        $results->bindParam(1,$limit, PDO::PARAM_INT);
+        $results->bindParam(2,$offset, PDO::PARAM_INT);
+      }else{
+          $results = $db->prepare($sql);
+      }
+
+      $results->execute();
     }catch(Exception $e){
       echo $e->getMessage();
       exit;
@@ -32,16 +41,24 @@ function full_catalog_retrieval(){
     return $catalog;
 }
 
-function category_catalog_retrieval($category){
+function category_catalog_retrieval($category, $limit= null, $offset = 0){
     include("connection.php");
     $category = strtolower($category);
     try{
-      $results = $db->prepare("Select media_id,title,
+      $sql = "Select media_id,title,
       category,img
       from Media
       WHERE LOWER(category) =?
-      ORDER BY title");
-      $results->bindParam(1, $category, PDO::PARAM_STR);
+      ORDER BY title";
+      if(is_integer($limit)){
+        $results = $db->prepare($sql. " LIMIT ? OFFSET ?");
+        $results->bindParam(1,$category, PDO::PARAM_STR);
+        $results->bindParam(2,$limit, PDO::PARAM_INT);
+        $results->bindParam(3,$offset, PDO::PARAM_INT);
+      }else{
+          $results = $db->prepare($sql);
+          $results->bindParam(1,$category, PDO::PARAM_STR);
+      }
       $results->execute();
     }catch(Exception $e){
       echo $e->getMessage();
